@@ -10,7 +10,7 @@ from config import DETECTION_MAX_DISTANCE
 #Devs deps for debugging, etc
 import time
 
-def getCube(squares):
+def getFaceCube(squares):
     if len(squares) < CLUSTER_SIZE**2:
         return None
 
@@ -20,17 +20,17 @@ def getCube(squares):
         if M["m00"] != 0:
             cx = int(M["m10"] / M["m00"])
             cy = int(M["m01"] / M["m00"])
-            center = (cx, cy)
-
+            newCenter = (cx, cy)
+            
             enabled = True
-            for center in centers:
-                dist = math.sqrt((center[0] - cx) ** 2 + (center[1] - cy) ** 2)
+            for existingCenter in centers:
+                dist = math.sqrt((existingCenter[0] - cx) ** 2 + (existingCenter[1] - cy) ** 2)
                 if dist <= 2:
                     enabled = False
                     break
 
             if enabled:
-                centers.append(center)
+                centers.append(newCenter)
 
     centers = sorted(centers, key=lambda c: (c[1], c[0]))
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
         squares = findSquares(filteredFrame)
 
-        newFaceCube = getCube(squares)
+        newFaceCube = getFaceCube(squares)
 
         if newFaceCube != None:
             print("Cube detected:", time.time())
