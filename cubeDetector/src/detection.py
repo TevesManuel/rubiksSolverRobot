@@ -60,7 +60,7 @@ def findSquares(frame):
         if len(approach) == 4 and cv2.isContourConvex(approach):
             x, y, w, h = cv2.boundingRect(approach)
             aspectRatio = float(w) / h
-            if 0.9 <= aspectRatio <= 1.1 and w * h > 100:
+            if 0.9 <= aspectRatio <= 1.1 and w * h > 200:
                 squares.append(approach)
     
     return squares

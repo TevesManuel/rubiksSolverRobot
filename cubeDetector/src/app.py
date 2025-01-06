@@ -24,6 +24,8 @@ if __name__ == '__main__':
         if not ret:
             break
 
+        frame = cv2.flip(frame, 1)
+
         filteredFrame = applyFilter(frame)
 
         squares = findSquares(filteredFrame)
