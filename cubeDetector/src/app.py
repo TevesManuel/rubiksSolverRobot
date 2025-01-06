@@ -1,14 +1,49 @@
 import cv2
 from config import WINDOW_TITLE
+from config import FILTER_MIN_BRIGHTNESS
+from config import FILTER_ADD_BRIGHTNESS
+from config import CLUSTER_SIZE
+from config import DETECTION_MAX_DISTANCE
+
+#Devs deps for debugging, etc
+import time
+
+def areSquaresClustered(squares):
+    if len(squares) < CLUSTER_SIZE**2:
+        return False
+
+    centers = []
+    for square in squares:
+        M = cv2.moments(square)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+            centers.append((cx, cy))
+
+    centers = sorted(centers, key=lambda c: (c[1], c[0]))
+
+    for row in range(0, len(centers), CLUSTER_SIZE):
+        grid = centers[row:row + CLUSTER_SIZE]
+        if len(grid) < CLUSTER_SIZE:
+            continue
+
+        for i in range(len(grid) - 1):
+            dist_x = abs(grid[i + 1][0] - grid[i][0])
+            dist_y = abs(grid[i + 1][1] - grid[i][1])
+
+            if dist_x > DETECTION_MAX_DISTANCE or dist_y > DETECTION_MAX_DISTANCE:
+                return False
+
+    return True
 
 def applyFilter(frame):
     frameWork = frame.copy()
 
-    blackFrameMask = cv2.inRange(frameWork, (0, 0, 0), (MIN, MIN, MIN))
-    noBlackFrameMask = cv2.inRange(frameWork, (MIN, MIN, MIN), (255, 255, 255))
+    blackFrameMask = cv2.inRange(frameWork, (0, 0, 0), (FILTER_MIN_BRIGHTNESS, FILTER_MIN_BRIGHTNESS, FILTER_MIN_BRIGHTNESS))
+    noBlackFrameMask = cv2.inRange(frameWork, (FILTER_MIN_BRIGHTNESS, FILTER_MIN_BRIGHTNESS, FILTER_MIN_BRIGHTNESS), (255, 255, 255))
 
     frameWork[blackFrameMask > 0] = (0, 0, 0)
-    frameWork[noBlackFrameMask > 0] = cv2.add(frameWork[noBlackFrameMask > 0], (SUM, SUM, SUM))
+    frameWork[noBlackFrameMask > 0] = cv2.add(frameWork[noBlackFrameMask > 0], (FILTER_ADD_BRIGHTNESS, FILTER_ADD_BRIGHTNESS, FILTER_ADD_BRIGHTNESS))
 
     grayScale = cv2.cvtColor(frameWork, cv2.COLOR_BGR2GRAY)
 
@@ -35,9 +70,6 @@ def findSquares(frame):
     
     return squares
 
-MIN = 100
-SUM = 255
-
 if __name__ == '__main__':
     videoCapture = cv2.VideoCapture(0)
 
@@ -50,8 +82,9 @@ if __name__ == '__main__':
 
         squares = findSquares(filteredFrame)
 
-        print(len(squares))
-
+        if areSquaresClustered(squares):
+            print("Cube detected:", time.time())
+        
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
 
         cv2.imshow(WINDOW_TITLE, frame)

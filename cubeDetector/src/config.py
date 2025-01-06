@@ -1,1 +1,5 @@
 WINDOW_TITLE = 'Cube detector'
+FILTER_MIN_BRIGHTNESS = 100
+FILTER_ADD_BRIGHTNESS = 255
+CLUSTER_SIZE = 3 # It is limited to solving 3x3 cubes for now
+DETECTION_MAX_DISTANCE = 50
