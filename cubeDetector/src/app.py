@@ -1,8 +1,25 @@
 import cv2
 from config import WINDOW_TITLE
 
+def applyFilter(frame):
+    frameWork = frame.copy()
+
+    blackFrameMask = cv2.inRange(frameWork, (0, 0, 0), (MIN, MIN, MIN))
+    noBlackFrameMask = cv2.inRange(frameWork, (MIN, MIN, MIN), (255, 255, 255))
+
+    frameWork[blackFrameMask > 0] = (0, 0, 0)
+    frameWork[noBlackFrameMask > 0] = cv2.add(frameWork[noBlackFrameMask > 0], (SUM, SUM, SUM))
+
+    grayScale = cv2.cvtColor(frameWork, cv2.COLOR_BGR2GRAY)
+
+    smooth = cv2.GaussianBlur(grayScale, (5, 5), 1.5)
+
+    edgesImage = cv2.Canny(smooth, 50, 100)
+
+    return edgesImage
+
 def findSquares(frame):
-    contorns, _ = cv2.findContours(edgesImage, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contorns, _ = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     squares = []
 
@@ -29,18 +46,9 @@ if __name__ == '__main__':
         if not ret:
             break
 
-        noBlackFrame = cv2.inRange(frame, (MIN, MIN, MIN), (255, 255, 255))
-        frame[noBlackFrame > 0] = cv2.add(frame[noBlackFrame > 0], (SUM, SUM, SUM))
+        filteredFrame = applyFilter(frame)
 
-        grayScale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # smooth = cv2.GaussianBlur(grayScale, (5, 5), 1.5)
-
-        edgesImage = cv2.Canny(grayScale, 50, 100)
-
-        squares = findSquares(edgesImage)
-
-        frame = frame
+        squares = findSquares(filteredFrame)
 
         print(len(squares))
 
