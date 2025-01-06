@@ -8,9 +8,9 @@ from config import DETECTION_MAX_DISTANCE
 #Devs deps for debugging, etc
 import time
 
-def areSquaresClustered(squares):
+def getCube(squares):
     if len(squares) < CLUSTER_SIZE**2:
-        return False
+        return None
 
     centers = []
     for square in squares:
@@ -18,10 +18,13 @@ def areSquaresClustered(squares):
         if M["m00"] != 0:
             cx = int(M["m10"] / M["m00"])
             cy = int(M["m01"] / M["m00"])
-            centers.append((cx, cy))
+            center = (cx, cy)
+            if center not in centers:
+                centers.append(center)
 
     centers = sorted(centers, key=lambda c: (c[1], c[0]))
 
+    grid_centers = []
     for row in range(0, len(centers), CLUSTER_SIZE):
         grid = centers[row:row + CLUSTER_SIZE]
         if len(grid) < CLUSTER_SIZE:
@@ -32,9 +35,13 @@ def areSquaresClustered(squares):
             dist_y = abs(grid[i + 1][1] - grid[i][1])
 
             if dist_x > DETECTION_MAX_DISTANCE or dist_y > DETECTION_MAX_DISTANCE:
-                return False
+                return None
 
-    return True
+        grid_centers.extend(grid)
+
+    if len(grid_centers) == CLUSTER_SIZE**2:
+        return grid_centers
+    return None
 
 def applyFilter(frame):
     frameWork = frame.copy()
@@ -82,8 +89,11 @@ if __name__ == '__main__':
 
         squares = findSquares(filteredFrame)
 
-        if areSquaresClustered(squares):
+        faceCube = getCube(squares)
+
+        if faceCube != None:
             print("Cube detected:", time.time())
+            print(faceCube)
         
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
 
