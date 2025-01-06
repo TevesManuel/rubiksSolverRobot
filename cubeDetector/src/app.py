@@ -7,14 +7,17 @@ from detection import getFaceCube
 
 from utils import closestColor
 
+from solver import preprocessInput
+from solver import cubeFaces
+
 from config import WINDOW_TITLE
 
 #Devs deps for debugging, etc
 import time
 
+facesRecognized = 0
 
-faceCube = []
-faceCubeColors = []
+lastFaceCubeLecture = []
 
 if __name__ == '__main__':
     videoCapture = cv2.VideoCapture(0)
@@ -33,20 +36,43 @@ if __name__ == '__main__':
         newFaceCube = getFaceCube(squares)
 
         if newFaceCube != None:
-            print("Cube detected:", time.time())
-            print(newFaceCube)
             faceCubeColors = []
             for center in newFaceCube:
-                faceCubeColors.append(frame[center[1], center[0]])
-            for color in faceCubeColors:
-                print(color)
-                print(closestColor(color))
-            faceCube = newFaceCube
+                faceCubeColors.append(closestColor(frame[center[1], center[0]]))
+            
+            k = faceCubeColors[2]
+            faceCubeColors[2] = faceCubeColors[0]
+            faceCubeColors[0] = k
+            k = faceCubeColors[5]
+            faceCubeColors[5] = faceCubeColors[3]
+            faceCubeColors[3] = k
+            k = faceCubeColors[8]
+            faceCubeColors[8] = faceCubeColors[6]
+            faceCubeColors[6] = k
+
+            if cubeFaces[faceCubeColors[4]+"Face"] == []:
+                cubeFaces[faceCubeColors[4]+"Face"] = faceCubeColors
+                facesRecognized += 1
+                print("Face " + faceCubeColors[4] + " is already registered.")
+                print("Faces: " + str(facesRecognized) + "/6")
+            
+            lastFaceCubeLecture = newFaceCube
+
+
+            if facesRecognized == 6:
+                preprocessedInput = preprocessInput(cubeFaces)
+                print("Preprocessed input is ", preprocessedInput)
+                print("Has ", preprocessedInput.count('U'), "/9 U.")
+                print("Has ", preprocessedInput.count('R'), "/9 R.")
+                print("Has ", preprocessedInput.count('F'), "/9 F.")
+                print("Has ", preprocessedInput.count('D'), "/9 D.")
+                print("Has ", preprocessedInput.count('L'), "/9 L.")
+                print("Has ", preprocessedInput.count('B'), "/9 B.")
     
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
 
-        if len(faceCube) > 0:
-            for center in faceCube:
+        if len(lastFaceCubeLecture) > 0:
+            for center in lastFaceCubeLecture:
                 cv2.circle(frame, center, radius=10, color=(255, 0, 0), thickness=-1)
 
         cv2.imshow(WINDOW_TITLE, frame)
