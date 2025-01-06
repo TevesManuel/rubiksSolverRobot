@@ -1,8 +1,11 @@
 import cv2
 
 from filters import applyFilter
+
 from detection import findSquares
 from detection import getFaceCube
+
+from utils import closestColor
 
 from config import WINDOW_TITLE
 
@@ -35,6 +38,7 @@ if __name__ == '__main__':
                 faceCubeColors.append(frame[center[1], center[0]])
             for color in faceCubeColors:
                 print(color)
+                print(closestColor(color))
             faceCube = newFaceCube
     
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
