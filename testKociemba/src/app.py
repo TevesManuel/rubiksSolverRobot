@@ -18,7 +18,7 @@ colors = {
     'B': [ 'white'  , 'white'  , 'white'  , 'orange' , 'orange' , 'orange' , 'red'    , 'red'   , 'red'    ],
 }
 
-state = ''.join(colorToFace[color] for cara in ['U', 'R', 'F', 'D', 'L', 'B'] for color in colors[cara])
+state = ''.join(colorToFace[color] for face in ['U', 'R', 'F', 'D', 'L', 'B'] for color in colors[face])
 
 print("State: ", state)
 solution = kociemba.solve(state)
