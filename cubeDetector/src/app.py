@@ -1,4 +1,6 @@
 import cv2
+import math
+
 from config import WINDOW_TITLE
 from config import FILTER_MIN_BRIGHTNESS
 from config import FILTER_ADD_BRIGHTNESS
@@ -19,7 +21,15 @@ def getCube(squares):
             cx = int(M["m10"] / M["m00"])
             cy = int(M["m01"] / M["m00"])
             center = (cx, cy)
-            if center not in centers:
+
+            enabled = True
+            for center in centers:
+                dist = math.sqrt((center[0] - cx) ** 2 + (center[1] - cy) ** 2)
+                if dist <= 2:
+                    enabled = False
+                    break
+
+            if enabled:
                 centers.append(center)
 
     centers = sorted(centers, key=lambda c: (c[1], c[0]))
@@ -77,6 +87,8 @@ def findSquares(frame):
     
     return squares
 
+faceCube = []
+
 if __name__ == '__main__':
     videoCapture = cv2.VideoCapture(0)
 
@@ -89,13 +101,18 @@ if __name__ == '__main__':
 
         squares = findSquares(filteredFrame)
 
-        faceCube = getCube(squares)
+        newFaceCube = getCube(squares)
 
-        if faceCube != None:
+        if newFaceCube != None:
             print("Cube detected:", time.time())
-            print(faceCube)
-        
+            print(newFaceCube)
+            faceCube = newFaceCube
+    
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
+
+        if len(faceCube) > 0:
+            for center in faceCube:
+                cv2.circle(frame, center, radius=10, color=(255, 0, 0), thickness=-1)
 
         cv2.imshow(WINDOW_TITLE, frame)
 
