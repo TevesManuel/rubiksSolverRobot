@@ -1,3 +1,5 @@
+import kociemba
+
 colorToFace = {
     'white'  : 'U',
     'blue'   : 'R',
@@ -31,3 +33,6 @@ def debugPreprocessedInput(preprocessedInput):
     print("Has ", preprocessedInput.count('D'), "/9 D.")
     print("Has ", preprocessedInput.count('L'), "/9 L.")
     print("Has ", preprocessedInput.count('B'), "/9 B.")
+
+def solve(preprocessedInput):
+    return kociemba.solve(preprocessedInput)
