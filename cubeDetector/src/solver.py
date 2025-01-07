@@ -34,5 +34,15 @@ def debugPreprocessedInput(preprocessedInput):
     print("Has ", preprocessedInput.count('L'), "/9 L.")
     print("Has ", preprocessedInput.count('B'), "/9 B.")
 
+def countCubeColors(preprocessedInput):
+    return {
+        "white"  : preprocessedInput.count('U'),
+        "blue"   : preprocessedInput.count('R'),
+        "red"    : preprocessedInput.count('F'),
+        "yellow" : preprocessedInput.count('D'),
+        "green"  : preprocessedInput.count('L'),
+        "orange" : preprocessedInput.count('B'),
+    }
+
 def solve(preprocessedInput):
     return kociemba.solve(preprocessedInput)
