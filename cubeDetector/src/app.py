@@ -9,11 +9,10 @@ from utils import closestColor
 
 from solver import preprocessInput
 from solver import cubeFaces
+from solver import isValidInput
+from solver import debugPreprocessedInput
 
 from config import WINDOW_TITLE
-
-#Devs deps for debugging, etc
-import time
 
 facesRecognized = 0
 
@@ -55,20 +54,17 @@ if __name__ == '__main__':
                 facesRecognized += 1
                 print("Face " + faceCubeColors[4] + " is already registered.")
                 print("Faces: " + str(facesRecognized) + "/6")
-            
+                print("\n", faceCubeColors, "\n")            
             lastFaceCubeLecture = newFaceCube
-
 
             if facesRecognized == 6:
                 preprocessedInput = preprocessInput(cubeFaces)
                 print("Preprocessed input is ", preprocessedInput)
-                print("Has ", preprocessedInput.count('U'), "/9 U.")
-                print("Has ", preprocessedInput.count('R'), "/9 R.")
-                print("Has ", preprocessedInput.count('F'), "/9 F.")
-                print("Has ", preprocessedInput.count('D'), "/9 D.")
-                print("Has ", preprocessedInput.count('L'), "/9 L.")
-                print("Has ", preprocessedInput.count('B'), "/9 B.")
-    
+                if isValidInput(preprocessedInput):
+                    print("The input is valid.")
+                else:
+                    debugPreprocessedInput(preprocessedInput)
+        
         cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
 
         if len(lastFaceCubeLecture) > 0:

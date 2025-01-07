@@ -1,13 +1,11 @@
 import cv2
 import math
 
-from config import CLUSTER_SIZE
-from config import DETECTION_MAX_DISTANCE
+from config import DETECTION_CLUSTER_SIZE
+from config import DETECTION_MIN_DISTANCE_BETWEEN_CENTERS
+from config import DETECTION_MIN_AREA
 
 def getFaceCube(squares):
-    if len(squares) < CLUSTER_SIZE**2:
-        return None
-
     centers = []
     for square in squares:
         M = cv2.moments(square)
@@ -26,26 +24,43 @@ def getFaceCube(squares):
             if enabled:
                 centers.append(newCenter)
 
-    centers = sorted(centers, key=lambda c: (c[1], c[0]))
+    cube_x_axis = []
+    cube_y_axis = []
 
-    grid_centers = []
-    for row in range(0, len(centers), CLUSTER_SIZE):
-        grid = centers[row:row + CLUSTER_SIZE]
-        if len(grid) < CLUSTER_SIZE:
-            continue
+    for center in centers:
+        y = center[0]
+        
+        belongs = False
+        for i in range(len(cube_y_axis)):
+            if abs(cube_y_axis[i] - y) <= DETECTION_MIN_DISTANCE_BETWEEN_CENTERS:
+                belongs = True
+                break
+        if not belongs:
+            cube_y_axis.append(y)
 
-        for i in range(len(grid) - 1):
-            dist_x = abs(grid[i + 1][0] - grid[i][0])
-            dist_y = abs(grid[i + 1][1] - grid[i][1])
+        x = center[1]
 
-            if dist_x > DETECTION_MAX_DISTANCE or dist_y > DETECTION_MAX_DISTANCE:
-                return None
+        belongs = False
+        for i in range(len(cube_x_axis)):
+            if abs(cube_x_axis[i] - x) <= DETECTION_MIN_DISTANCE_BETWEEN_CENTERS:
+                belongs = True
+                break
+        if not belongs:
+            cube_x_axis.append(x)
+    
+    cube_x_axis.sort()
+    cube_y_axis.sort()
 
-        grid_centers.extend(grid)
+    faceCube = None
 
-    if len(grid_centers) == CLUSTER_SIZE**2:
-        return grid_centers
-    return None
+    if len(cube_x_axis) == len(cube_y_axis) == DETECTION_CLUSTER_SIZE:
+        faceCube = []
+    
+        for x in cube_x_axis:
+            for y in cube_y_axis:
+                faceCube.append((y, x))
+
+    return faceCube
 
 
 def findSquares(frame):
@@ -60,7 +75,7 @@ def findSquares(frame):
         if len(approach) == 4:
             x, y, w, h = cv2.boundingRect(approach)
             aspectRatio = float(w) / h
-            if 0.9 <= aspectRatio <= 1.1 and cv2.contourArea(approach) > 400:
+            if 0.9 <= aspectRatio <= 1.1 and cv2.contourArea(approach) > DETECTION_MIN_AREA:
                 squares.append(approach)
     
     return squares
