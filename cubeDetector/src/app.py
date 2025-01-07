@@ -43,37 +43,36 @@ if __name__ == '__main__':
                 faceCubeColors = []
                 for center in newFaceCube:
                     faceCubeColors.append(closestColor(frame[center[1], center[0]]))
-                print(faceCubeColors)
-                if faceCubeColors.count("unknown") == 0:
-                    k = faceCubeColors[2]
-                    faceCubeColors[2] = faceCubeColors[0]
-                    faceCubeColors[0] = k
-                    k = faceCubeColors[5]
-                    faceCubeColors[5] = faceCubeColors[3]
-                    faceCubeColors[3] = k
-                    k = faceCubeColors[8]
-                    faceCubeColors[8] = faceCubeColors[6]
-                    faceCubeColors[6] = k
-
-                    if cubeFaces[faceCubeColors[4]+"Face"] == []:
-                        cubeFaces[faceCubeColors[4]+"Face"] = faceCubeColors
-                        facesRecognized += 1
-                        print("Face " + faceCubeColors[4] + " is already registered.")
-                        print("Faces: " + str(facesRecognized) + "/6")
-                        print("\n", faceCubeColors, "\n")   
-                    lastFaceCubeLecture = newFaceCube
-
-                    if facesRecognized == 6:
-                        isAllCubeReaded = True
-                        preprocessedInput = preprocessInput(cubeFaces)
-                        print("Preprocessed input is ", preprocessedInput)
-                        if isValidInput(preprocessedInput):
-                            print("The input is valid.")
-                            solution = solve(preprocessedInput)
-                            print("The solution is ", solution)
-                        else:
-                            debugPreprocessedInput(preprocessedInput)
                 
+                k = faceCubeColors[2]
+                faceCubeColors[2] = faceCubeColors[0]
+                faceCubeColors[0] = k
+                k = faceCubeColors[5]
+                faceCubeColors[5] = faceCubeColors[3]
+                faceCubeColors[3] = k
+                k = faceCubeColors[8]
+                faceCubeColors[8] = faceCubeColors[6]
+                faceCubeColors[6] = k
+
+                if cubeFaces[faceCubeColors[4]+"Face"] == []:
+                    cubeFaces[faceCubeColors[4]+"Face"] = faceCubeColors
+                    facesRecognized += 1
+                    print("Face " + faceCubeColors[4] + " is already registered.")
+                    print("Faces: " + str(facesRecognized) + "/6")
+                    print("\n", faceCubeColors, "\n")   
+                lastFaceCubeLecture = newFaceCube
+
+                if facesRecognized == 6:
+                    isAllCubeReaded = True
+                    preprocessedInput = preprocessInput(cubeFaces)
+                    print("Preprocessed input is ", preprocessedInput)
+                    if isValidInput(preprocessedInput):
+                        print("The input is valid.")
+                        solution = solve(preprocessedInput)
+                        print("The solution is ", solution)
+                    else:
+                        debugPreprocessedInput(preprocessedInput)
+            
 
             # Graphic debug
 
