@@ -55,12 +55,12 @@ def findSquares(frame):
 
     for contorn in contorns:
         perimeter = cv2.arcLength(contorn, True)
-        approach = cv2.approxPolyDP(contorn, 0.04 * perimeter, True)
+        approach = cv2.approxPolyDP(contorn, 0.15 * perimeter, True)
 
-        if len(approach) == 4 and cv2.isContourConvex(approach):
+        if len(approach) == 4:
             x, y, w, h = cv2.boundingRect(approach)
             aspectRatio = float(w) / h
-            if 0.9 <= aspectRatio <= 1.1 and w * h > 200:
+            if 0.9 <= aspectRatio <= 1.1 and cv2.contourArea(approach) > 400:
                 squares.append(approach)
     
     return squares
