@@ -7,13 +7,14 @@ from detection import findSquares
 from detection import getFaceCube
 
 from utils import closestColor
+from utils import drawCube
+from utils import drawCubeStats
 
 from solver import preprocessInput
 from solver import cubeFaces
 from solver import isValidInput
 from solver import debugPreprocessedInput
 from solver import solve
-from solver import countCubeColors
 
 from config import WINDOW_TITLE
 
@@ -112,14 +113,9 @@ class App:
             else:
                 frame = np.zeros(camera_dimensions, dtype=np.uint8)
 
-                cubeColors = countCubeColors(preprocessInput(cubeFaces))
+                drawCubeStats(frame)
 
-                cv2.putText(frame, "White is "  + str(cubeColors["white"])  + "/9", (10, 20 + 0*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["white"]  != 9 else (255, 255, 255), 1)
-                cv2.putText(frame, "Blue is "   + str(cubeColors["blue"])   + "/9", (10, 20 + 1*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["blue"]   != 9 else (255, 255, 255), 1)
-                cv2.putText(frame, "Red is "    + str(cubeColors["red"])    + "/9", (10, 20 + 2*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["red"]    != 9 else (255, 255, 255), 1)
-                cv2.putText(frame, "Yellow is " + str(cubeColors["yellow"]) + "/9", (10, 20 + 3*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["yellow"] != 9 else (255, 255, 255), 1)
-                cv2.putText(frame, "Green is "  + str(cubeColors["green"])  + "/9", (10, 20 + 4*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["green"]  != 9 else (255, 255, 255), 1)
-                cv2.putText(frame, "Orange is " + str(cubeColors["orange"]) + "/9", (10, 20 + 5*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["orange"] != 9 else (255, 255, 255), 1)
+                drawCube(frame, cubeFaces, (20, 200))
 
                 cv2.imshow(WINDOW_TITLE, frame)
                 
