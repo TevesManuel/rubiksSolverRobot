@@ -129,14 +129,21 @@ class App:
                 drawCubeStats(frame)
 
                 drawCube(frame, cubeFaces, (20, 200), self.mouse)
-                drawControls(frame)
+                drawControls(frame, (20, 440), self.mouse)
 
                 cv2.imshow(WINDOW_TITLE, frame)
                 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
                 if cv2.waitKey(1) & 0xFF == ord(' '):
-                    print("Solve")
+                    preprocessedInput = preprocessInput(cubeFaces)
+                    print("Preprocessed input is ", preprocessedInput)
+                    if isValidInput(preprocessedInput):
+                        print("The input is valid.")
+                        solution = solve(preprocessedInput)
+                        print("The solution is ", solution)
+                    else:
+                        print("The input is invalid.")
         self.close()
             
 

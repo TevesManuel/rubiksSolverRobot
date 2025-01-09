@@ -7,6 +7,7 @@ class Mouse:
         self.clickDown = False
         self.clickUp   = False
         self.click     = False
+        self.payload = "white"
 
     def handleClick(self, event, x, y, flags, param):
         self.x = x

@@ -1,3 +1,4 @@
+from mimetypes import init
 import numpy as np
 import cv2
 
@@ -100,8 +101,7 @@ def drawCubeFace(frame, initialPosition, cubeFaceColors, mouse):
         x = initialPosition[0] + (i%3)*(GRAPHICS_OFFSET_CUBEFACE + GRAPHICS_SIZE_CUBEFACE)
         y = initialPosition[1] + int(i/3)*(GRAPHICS_OFFSET_CUBEFACE + GRAPHICS_SIZE_CUBEFACE)                    
         if mouse.clickDown and mouse.x > x and mouse.x < x + GRAPHICS_SIZE_CUBEFACE and mouse.y > y and mouse.y < y + GRAPHICS_SIZE_CUBEFACE:
-            print("Clicked")
-            cubeFaceColors[i] = 'white'
+            cubeFaceColors[i] = mouse.payload
         cv2.rectangle(frame,(x, y), (x + GRAPHICS_SIZE_CUBEFACE, y + GRAPHICS_SIZE_CUBEFACE), stringToBGR(cubeFaceColors[i]), -1)
     return (3*GRAPHICS_SIZE_CUBEFACE + 2*GRAPHICS_OFFSET_CUBEFACE, 3*GRAPHICS_SIZE_CUBEFACE + 2*GRAPHICS_OFFSET_CUBEFACE)
 
@@ -117,5 +117,14 @@ def drawCube(frame, cubeFaces, initialPosition, mouse):
     drawCubeFace(frame, (redPosition[0], redPosition[1] + dim[1] + offset), cubeFaces['yellowFace'], mouse)
     drawCubeFace(frame, (redPosition[0] + dim[0] + offset, redPosition[1]), cubeFaces['blueFace'], mouse)
 
-def drawControls(frame):
-    pass
+def drawControls(frame, initialPosition, mouse):
+    cv2.putText(frame, "Click on the colors below to select them, then correct the cube above.", initialPosition, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame, "When you're done, press space to solve.", (initialPosition[0], initialPosition[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    for i, color in enumerate(REFERENCE_COLORS.keys()):
+        a = 2*(GRAPHICS_OFFSET_CUBEFACE + GRAPHICS_SIZE_CUBEFACE)
+        b = 2 * GRAPHICS_SIZE_CUBEFACE
+        x = initialPosition[0] + i*a
+        y = initialPosition[1] + 60
+        cv2.rectangle(frame,(x, y), (x + b, y + b), stringToBGR(color), -1)
+        if mouse.clickDown and mouse.x > x and mouse.x < x + b and mouse.y > y and mouse.y < y + b:
+            mouse.payload = color
