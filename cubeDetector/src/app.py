@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from mouse import Mouse
 from filters import applyFilter
 
 from detection import findSquares
@@ -21,6 +22,8 @@ from config import WINDOW_TITLE
 class App:
     def __init__(self):
         self.videoCapture = cv2.VideoCapture(0)
+
+        self.mouse = Mouse()
 
         self.facesRecognized = 0
         self.lastFaceCubeLecture = []
@@ -102,17 +105,20 @@ class App:
         self.videoCapture.release()
         cv2.destroyAllWindows()    
 
-    def handleClick(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            print(f"Clic izquierdo en ({x}, {y})")
 
     def run(self):
 
         camera_dimensions = (int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), 3)
 
         cv2.namedWindow(WINDOW_TITLE)
-        cv2.setMouseCallback(WINDOW_TITLE, self.handleClick)
+        
+        self.mouse.setup(WINDOW_TITLE)
+
         while True:
+            
+            self.mouse.update()
+            # self.mouse.debug()
+
             if not self.isAllCubeReaded:
                 if self.detectionView():
                     break
