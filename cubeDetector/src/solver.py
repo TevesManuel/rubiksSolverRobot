@@ -18,6 +18,14 @@ cubeFaces = {
     "orangeFace": []
 }
 
+def resetCubeFaces():
+    cubeFaces["whiteFace"] = []
+    cubeFaces["blueFace"] = []
+    cubeFaces["redFace"] = []
+    cubeFaces["yellowFace"] = []
+    cubeFaces["greenFace"] = []
+    cubeFaces["orangeFace"] = []
+
 def preprocessInput(cubeFaces):
     return ''.join(colorToFace[color] for face in ['whiteFace', 'blueFace', 'redFace', 'yellowFace', 'greenFace', 'orangeFace'] for color in cubeFaces[face])
 

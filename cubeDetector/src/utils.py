@@ -1,4 +1,5 @@
 from mimetypes import init
+from ossaudiodev import control_labels
 import numpy as np
 import cv2
 
@@ -72,7 +73,7 @@ def stringToBGR(color):
     if color == "white":
         return (255, 255, 255)
 
-from solver import cubeFaces
+from solver import cubeFaces, isValidInput
 from solver import preprocessInput
 
 def countCubeColors(preprocessedInput):
@@ -128,3 +129,26 @@ def drawControls(frame, initialPosition, mouse):
         cv2.rectangle(frame,(x, y), (x + b, y + b), stringToBGR(color), -1)
         if mouse.clickDown and mouse.x > x and mouse.x < x + b and mouse.y > y and mouse.y < y + b:
             mouse.payload = color
+
+from enum import Enum
+
+class ControlsReturnValue(Enum):
+    NONE = 1
+    REBOOT = 2
+    SOLVE = 3
+
+def drawButtonsControls(frame, initialPosition, mouse):
+    color = (200, 200, 200)
+    isValidInputVar = isValidInput(preprocessInput(cubeFaces))
+    if not isValidInputVar:
+        color = (50, 50, 50)
+    cv2.rectangle(frame,initialPosition, (initialPosition[0] + 150, initialPosition[1] + 50), color, -1)
+
+    cv2.putText(frame, "SOLVE", (initialPosition[0] + 25, initialPosition[1] + 35), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    if isValidInputVar and mouse.clickDown and mouse.x > initialPosition[0] and mouse.x < initialPosition[0] + 150 and mouse.y > initialPosition[1] and mouse.y < initialPosition[1] + 50:
+        return ControlsReturnValue.SOLVE
+    cv2.rectangle(frame,(initialPosition[0], initialPosition[1] + 60), (initialPosition[0] + 150, initialPosition[1] + 50 + 60), (200, 200, 200), -1)
+    cv2.putText(frame, "REBOOT", (initialPosition[0] + 15, initialPosition[1] + 35 + 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    if mouse.clickDown and mouse.x > initialPosition[0] and mouse.x < initialPosition[0] + 150 and mouse.y > initialPosition[1] + 60 and mouse.y < initialPosition[1] + 50 + 60:
+        return ControlsReturnValue.REBOOT
+    return ControlsReturnValue.NONE

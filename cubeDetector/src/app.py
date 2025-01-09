@@ -11,14 +11,18 @@ from utils import closestColor
 from utils import drawCube
 from utils import drawControls
 from utils import drawCubeStats
+from utils import drawButtonsControls
+from utils import ControlsReturnValue
 
 from solver import preprocessInput
 from solver import cubeFaces
 from solver import isValidInput
 from solver import debugPreprocessedInput
 from solver import solve
+from solver import resetCubeFaces
 
 from config import WINDOW_TITLE
+from config import WINDOW_SIZE
 
 class App:
     def __init__(self):
@@ -68,9 +72,6 @@ class App:
                 if cubeFaces[faceCubeColors[4]+"Face"] == []:
                     cubeFaces[faceCubeColors[4]+"Face"] = faceCubeColors
                     self.facesRecognized += 1
-                    print("Face " + faceCubeColors[4] + " is already registered.")
-                    print("Faces: " + str(self.facesRecognized) + "/6")
-                    print("\n", faceCubeColors, "\n")   
 
                 self.lastFaceCubeLecture = newFaceCube
 
@@ -84,7 +85,7 @@ class App:
                         solution = solve(preprocessedInput)
                         print("The solution is ", solution)
                     else:
-                        debugPreprocessedInput(preprocessedInput)
+                        print("The input is invalid.")
                         
                 # Graphic debug
                 cv2.drawContours(frame, squares, -1, (0, 255, 0), 10)
@@ -109,7 +110,7 @@ class App:
 
     def run(self):
 
-        camera_dimensions = (int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), 3)
+        camera_dimensions = (WINDOW_SIZE, WINDOW_SIZE, 3)
 
         cv2.namedWindow(WINDOW_TITLE)
         
@@ -128,14 +129,22 @@ class App:
 
                 drawCubeStats(frame)
 
-                drawCube(frame, cubeFaces, (20, 200), self.mouse)
-                drawControls(frame, (20, 440), self.mouse)
+                drawCube(frame, cubeFaces, (40, 220), self.mouse)
+                drawControls(frame, (20, 500), self.mouse)
+                newInstruction = drawButtonsControls(frame, (450, 20), self.mouse)
 
                 cv2.imshow(WINDOW_TITLE, frame)
                 
+                if newInstruction == ControlsReturnValue.REBOOT:
+                    self.isAllCubeReaded = False
+                    self.lastFaceCubeLecture = []
+                    self.facesRecognized = 0
+                    self.videoCapture = cv2.VideoCapture(0)
+                    resetCubeFaces()
+
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
-                if cv2.waitKey(1) & 0xFF == ord(' '):
+                if (cv2.waitKey(1) & 0xFF == ord(' ')) or newInstruction == ControlsReturnValue.SOLVE:
                     preprocessedInput = preprocessInput(cubeFaces)
                     print("Preprocessed input is ", preprocessedInput)
                     if isValidInput(preprocessedInput):
