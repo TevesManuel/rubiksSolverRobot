@@ -102,10 +102,16 @@ class App:
         self.videoCapture.release()
         cv2.destroyAllWindows()    
 
+    def handleClick(self, event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            print(f"Clic izquierdo en ({x}, {y})")
+
     def run(self):
 
         camera_dimensions = (int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), 3)
 
+        cv2.namedWindow(WINDOW_TITLE)
+        cv2.setMouseCallback(WINDOW_TITLE, self.handleClick)
         while True:
             if not self.isAllCubeReaded:
                 if self.detectionView():
