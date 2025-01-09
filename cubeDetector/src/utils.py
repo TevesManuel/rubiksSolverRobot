@@ -95,21 +95,27 @@ def drawCubeStats(frame):
     cv2.putText(frame, "Green is "  + str(cubeColors["green"])  + "/9", (10, 20 + 4*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["green"]  != 9 else (255, 255, 255), 1)
     cv2.putText(frame, "Orange is " + str(cubeColors["orange"]) + "/9", (10, 20 + 5*20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255) if cubeColors["orange"] != 9 else (255, 255, 255), 1)
 
-def drawCubeFace(frame, initialPosition, cubeFaceColors):
+def drawCubeFace(frame, initialPosition, cubeFaceColors, mouse):
     for i in range(9):
         x = initialPosition[0] + (i%3)*(GRAPHICS_OFFSET_CUBEFACE + GRAPHICS_SIZE_CUBEFACE)
         y = initialPosition[1] + int(i/3)*(GRAPHICS_OFFSET_CUBEFACE + GRAPHICS_SIZE_CUBEFACE)                    
+        if mouse.clickDown and mouse.x > x and mouse.x < x + GRAPHICS_SIZE_CUBEFACE and mouse.y > y and mouse.y < y + GRAPHICS_SIZE_CUBEFACE:
+            print("Clicked")
+            cubeFaceColors[i] = 'white'
         cv2.rectangle(frame,(x, y), (x + GRAPHICS_SIZE_CUBEFACE, y + GRAPHICS_SIZE_CUBEFACE), stringToBGR(cubeFaceColors[i]), -1)
     return (3*GRAPHICS_SIZE_CUBEFACE + 2*GRAPHICS_OFFSET_CUBEFACE, 3*GRAPHICS_SIZE_CUBEFACE + 2*GRAPHICS_OFFSET_CUBEFACE)
 
-def drawCube(frame, cubeFaces, initialPosition):
+def drawCube(frame, cubeFaces, initialPosition, mouse):
     offset = 2*GRAPHICS_OFFSET_CUBEFACE
-    dim = drawCubeFace(frame, initialPosition, cubeFaces['orangeFace'])
+    dim = drawCubeFace(frame, initialPosition, cubeFaces['orangeFace'], mouse)
     new_x_pos = dim[0] + initialPosition[0] + offset
-    drawCubeFace(frame, (new_x_pos, initialPosition[1]), cubeFaces['greenFace'])
+    drawCubeFace(frame, (new_x_pos, initialPosition[1]), cubeFaces['greenFace'], mouse)
     new_x_pos = new_x_pos + dim[0] + offset
     redPosition = (new_x_pos, initialPosition[1])
-    drawCubeFace(frame, redPosition, cubeFaces['redFace'])
-    drawCubeFace(frame, (redPosition[0], redPosition[1] - dim[1] - offset), cubeFaces['whiteFace'])
-    drawCubeFace(frame, (redPosition[0], redPosition[1] + dim[1] + offset), cubeFaces['yellowFace'])
-    drawCubeFace(frame, (redPosition[0] + dim[0] + offset, redPosition[1]), cubeFaces['blueFace'])
+    drawCubeFace(frame, redPosition, cubeFaces['redFace'], mouse)
+    drawCubeFace(frame, (redPosition[0], redPosition[1] - dim[1] - offset), cubeFaces['whiteFace'], mouse)
+    drawCubeFace(frame, (redPosition[0], redPosition[1] + dim[1] + offset), cubeFaces['yellowFace'], mouse)
+    drawCubeFace(frame, (redPosition[0] + dim[0] + offset, redPosition[1]), cubeFaces['blueFace'], mouse)
+
+def drawControls(frame):
+    pass

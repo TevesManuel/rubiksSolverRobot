@@ -9,6 +9,7 @@ from detection import getFaceCube
 
 from utils import closestColor
 from utils import drawCube
+from utils import drawControls
 from utils import drawCubeStats
 
 from solver import preprocessInput
@@ -127,7 +128,8 @@ class App:
 
                 drawCubeStats(frame)
 
-                drawCube(frame, cubeFaces, (20, 200))
+                drawCube(frame, cubeFaces, (20, 200), self.mouse)
+                drawControls(frame)
 
                 cv2.imshow(WINDOW_TITLE, frame)
                 
